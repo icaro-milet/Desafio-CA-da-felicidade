@@ -1,0 +1,47 @@
+# docker-compose -f infra-on-docker.yml up -d --build
+# docker-compose -f infra-on-docker.yml down --remove-orphans
+
+version: '3.7'
+
+services:
+
+  desafio-db:
+    image: postgres:14.2-alpine
+    hostname: desafio
+    container_name: desafio
+    restart: always
+    networks:
+      - desafio-net
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: pass
+      POSTGRES_MULTIPLE_DATABASES: '"Desafio"'
+    ports:
+      - 5432:5432
+
+  pgAdmin:
+    image: dpage/pgadmin4:6.14
+    hostname: desafio-pgAdminhn
+    container_name: desafio-pgAdmincn
+    restart: always
+    networks:
+      - desafio-net
+    depends_on:
+      - desafio-db
+    environment:
+      PGADMIN_DEFAULT_EMAIL: user@avanade.com
+      PGADMIN_DEFAULT_PASSWORD: pass
+      PGADMIN_DISABLE_POSTFIX: "true"
+    ports:
+      - 9046:80
+      - 9047:443
+
+networks:
+  desafio-net:
+    driver: bridge
+
+volumes:
+  postgresql-db:
+  postgresql:
+  postgresql_data:
+  
